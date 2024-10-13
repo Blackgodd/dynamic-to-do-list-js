@@ -60,3 +60,65 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
 });
+
+// script.js
+
+// Initialize an empty tasks array
+let tasks = [];
+
+// Function to load tasks from Local Storage
+function loadTasks() {
+    const savedTasks = localStorage.getItem('tasks');
+    if (savedTasks) {
+        tasks = JSON.parse(savedTasks);
+        tasks.forEach(task => {
+            addTaskToDOM(task);
+        });
+    }
+}
+
+// Function to add a task to the DOM
+function addTaskToDOM(task) {
+    const taskList = document.getElementById('task-list');
+    const taskItem = document.createElement('li');
+    taskItem.className = 'task';
+    taskItem.innerHTML = `
+        ${task} <button class="remove">Remove</button>
+    `;
+    taskList.appendChild(taskItem);
+    // Add event listener for the remove button
+    taskItem.querySelector('.remove').addEventListener('click', () => {
+        removeTask(taskItem, task);
+    });
+}
+
+// Function to handle adding a new task
+function addTask() {
+    const taskInput = document.getElementById('task-input');
+    const taskText = taskInput.value.trim();
+    
+    if (taskText) {
+        tasks.push(taskText); // Update the tasks array
+        addTaskToDOM(taskText); // Add task to the DOM
+        saveTasks(); // Save updated tasks to Local Storage
+        taskInput.value = ''; // Clear input field
+    }
+}
+
+// Function to remove a task
+function removeTask(taskItem, task) {
+    taskItem.remove(); // Remove the task from the DOM
+    tasks = tasks.filter(t => t !== task); // Update tasks array
+    saveTasks(); // Save updated tasks to Local Storage
+}
+
+// Function to save tasks to Local Storage
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+// Event listener for DOMContentLoaded to load tasks on page load
+document.addEventListener('DOMContentLoaded', () => {
+    loadTasks();
+    document.getElementById('add-task').addEventListener('click', addTask);
+});
